@@ -7,10 +7,11 @@
     app_dir: /tmp/flask_app
     docker_image: flask-jenkins-app
     container_name: flask-container
+    project_root: /var/lib/jenkins/workspace/test-pipeline   # Absolute path to your Jenkins workspace
 
   tasks:
 
-    # 1️⃣ Install required packages (Python3, pip, Docker)
+    # 1️⃣ Install required packages
     - name: Ensure required packages are installed
       apt:
         name:
@@ -27,21 +28,12 @@
         state: directory
         mode: '0755'
 
-    # 3️⃣ Copy the entire project (Flask code) recursively
+    # 3️⃣ Copy entire project (including Dockerfile) to remote VM
     - name: Copy entire project to remote VM
       synchronize:
-        src: ./                     # local folder containing Flask app code
+        src: "{{ project_root }}/"
         dest: "{{ app_dir }}"
         recursive: yes
-
-    # 3️⃣a Explicitly copy the Dockerfile
-    - name: Copy Dockerfile explicitly
-      copy:
-        src: ./Dockerfile           # path to Dockerfile in Jenkins workspace
-        dest: "{{ app_dir }}/Dockerfile"
-        owner: "{{ ansible_user }}"
-        group: "{{ ansible_user }}"
-        mode: '0644'
 
     # 4️⃣ Build the Docker image on remote VM
     - name: Build Docker image
