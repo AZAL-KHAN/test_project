@@ -3,8 +3,9 @@ pipeline {
 
     environment {
         KUBECONFIG = '/var/lib/jenkins/.kube/config'
-        DOCKER_IMAGE = "flask-jenkins-app"     // Local Docker image
-        CONTAINER_NAME = "flask-container"     // Local test container
+        DOCKER_IMAGE = "flask-jenkins-app"
+        CONTAINER_NAME = "flask-container"
+        ANSIBLE_DIR = "ansible"   // folder containing playbook & inventory
     }
 
     stages {
@@ -25,9 +26,7 @@ pipeline {
         stage("Run & Test Container") {
             steps {
                 echo "Running container for testing..."
-                // Stop old container if exists
                 sh 'docker stop $CONTAINER_NAME || true && docker rm $CONTAINER_NAME || true'
-                // Run new container
                 sh 'docker run -d -p 5000:5000 --name $CONTAINER_NAME $DOCKER_IMAGE:latest'
 
                 echo "Waiting for container to start..."
@@ -54,9 +53,16 @@ pipeline {
                 echo "Deploying app to Kubernetes..."
                 sh 'kubectl apply -f deployment.yaml'
                 sh 'kubectl apply -f service.yaml'
-
-                echo "Checking deployed pods..."
                 sh 'kubectl get pods -l app=flask-app'
+            }
+        }
+
+        stage("Deploy to Remote VM via Ansible") {
+            steps {
+                echo "Deploying app to remote VM using Ansible..."
+                dir("$ANSIBLE_DIR") {
+                    sh 'ansible-playbook -i hosts.ini deploy_flask.yml'
+                }
             }
         }
     }
