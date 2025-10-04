@@ -14,6 +14,6 @@ spec:
     spec:
       containers:
       - name: flask-container
-        image: flask-jenkins-app:latest   # same name Jenkins builds
+        image: khanazal/devops-repo:flask_app
         ports:
         - containerPort: 5000
