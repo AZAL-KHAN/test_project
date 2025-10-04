@@ -7,7 +7,7 @@
     app_dir: /tmp/flask_app
 
   tasks:
-    - name: Ensure Python3, pip, and Docker are installed
+    - name: Ensure required packages are installed
       apt:
         name: "{{ item }}"
         state: present
@@ -16,10 +16,7 @@
         - python3
         - python3-pip
         - docker.io
-
-    - name: Install docker-compose if needed
-      pip:
-        name: docker-compose
+        - docker-compose   # install docker-compose from apt instead of pip
 
     - name: Create app directory
       file:
@@ -29,10 +26,10 @@
 
     - name: Copy project files to remote VM
       copy:
-        src: ./   # local project folder (where your Jenkinsfile, Dockerfile, etc. are)
+        src: ./   # local project folder (Jenkins will copy from repo workspace)
         dest: "{{ app_dir }}"
-        owner: "{{ ansible_user }}"
-        group: "{{ ansible_user }}"
+        owner: "{{ ansible_user | default('devops-labs') }}"
+        group: "{{ ansible_user | default('devops-labs') }}"
         mode: '0755'
 
     - name: Build Docker image on remote VM
