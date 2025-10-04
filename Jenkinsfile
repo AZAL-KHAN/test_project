@@ -2,6 +2,7 @@ pipeline {
     agent any
 
     environment {
+        KUBECONFIG = '/var/lib/jenkins/.kube/config'
         DOCKER_IMAGE = "flask-jenkins-app"     // Local Docker image
         CONTAINER_NAME = "flask-container"     // Local test container
     }
