@@ -10,14 +10,13 @@
 
   tasks:
 
-    # 1️⃣ Install required packages (Python3, pip, Docker, Docker Compose plugin)
+    # 1️⃣ Install required packages (Python3, pip, Docker)
     - name: Ensure required packages are installed
       apt:
         name:
           - python3
           - python3-pip
           - docker.io
-          - docker-compose-plugin
         state: present
         update_cache: yes
 
