@@ -27,12 +27,21 @@
         state: directory
         mode: '0755'
 
-    # 3️⃣ Copy the entire project (Dockerfile + app code) recursively
+    # 3️⃣ Copy the entire project (Flask code) recursively
     - name: Copy entire project to remote VM
       synchronize:
-        src: ./                     # local folder containing Dockerfile + Flask code
+        src: ./                     # local folder containing Flask app code
         dest: "{{ app_dir }}"
         recursive: yes
+
+    # 3️⃣a Explicitly copy the Dockerfile
+    - name: Copy Dockerfile explicitly
+      copy:
+        src: ./Dockerfile           # path to Dockerfile in Jenkins workspace
+        dest: "{{ app_dir }}/Dockerfile"
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+        mode: '0644'
 
     # 4️⃣ Build the Docker image on remote VM
     - name: Build Docker image
