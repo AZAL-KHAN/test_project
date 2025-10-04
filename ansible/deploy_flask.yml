@@ -7,19 +7,15 @@
     app_dir: /tmp/flask_app
 
   tasks:
-    - name: Ensure Python3, pip, and Docker are installed
+    - name: Ensure required packages are installed
       apt:
-        name: "{{ item }}"
+        name:
+          - python3
+          - python3-pip
+          - docker.io
+          - docker-compose-plugin   # proper way to install docker compose
         state: present
         update_cache: yes
-      loop:
-        - python3
-        - python3-pip
-        - docker.io
-
-    - name: Install docker-compose if needed
-      pip:
-        name: docker-compose
 
     - name: Create app directory
       file:
@@ -29,7 +25,7 @@
 
     - name: Copy project files to remote VM
       copy:
-        src: ./   # make sure this folder contains your Flask app code
+        src: ./                     # ensure this folder contains your Flask app code
         dest: "{{ app_dir }}"
         owner: "{{ ansible_user }}"
         group: "{{ ansible_user }}"
